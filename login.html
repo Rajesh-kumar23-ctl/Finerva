@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finerva | AI Financial Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+        :root {
+            --primary: #00f5d4;
+            --secondary: #7b2cbf;
+            --accent: #ff6b6b;
+            --dark: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: var(--dark);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+        }
+
+        .logo-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(0, 245, 212, 0.3)); }
+            to { filter: drop-shadow(0 0 40px rgba(123, 44, 191, 0.5)); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-item:hover {
+            background: rgba(0, 245, 212, 0.1);
+            border-color: var(--primary);
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .feature-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .auth-side {
+            width: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .auth-card:hover::before {
+            left: 100%;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .tab-switch {
+            display: flex;
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .tab-switch-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .tab-switch-btn.active {
+            color: var(--dark);
+        }
+
+        .tab-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: var(--primary);
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .auth-form {
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 245, 212, 0.3);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .auth-footer a:hover {
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: auto;
+            accent-color: var(--primary);
+        }
+
+        .error-msg {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .legal-text {
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .legal-text strong {
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .brand-side {
+                display: none;
+            }
+            .auth-side {
+                width: 100%;
+            }
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--dark);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="brand-side">
+            <div class="logo-container">
+                <div class="logo">Finerva</div>
+            </div>
+            <p class="tagline">NEXT-GEN FINANCIAL INTELLIGENCE</p>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon">📈</div>
+                    <span class="feature-text">AI-Powered Stock Prediction</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🧠</div>
+                    <span class="feature-text">Smart Portfolio Analytics</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📰</div>
+                    <span class="feature-text">Real-time Market Intelligence</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎓</div>
+                    <span class="feature-text">Interactive Learning Modules</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-side">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1 class="auth-title" id="authTitle">Welcome Back</h1>
+                    <p class="auth-subtitle">Enter your credentials to continue</p>
+                </div>
+
+                <div class="error-msg" id="errorMsg"></div>
+
+                <div class="tab-switch">
+                    <div class="tab-slider" id="tabSlider"></div>
+                    <button class="tab-switch-btn active" onclick="switchTab('login')">Sign In</button>
+                    <button class="tab-switch-btn" onclick="switchTab('register')">Register</button>
+                </div>
+
+                <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="loginBtn">
+                        <span>Sign In →</span>
+                    </button>
+                    <div class="auth-footer">
+                        <label class="remember-me">
+                            <input type="checkbox"> Remember me
+                        </label>
+                        <a href="#">Forgot password?</a>
+                    </div>
+                </form>
+
+                <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="regName" placeholder="John Doe" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="regEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="••••••••" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="regBtn">
+                        <span>Create Account →</span>
+                    </button>
+                    <p class="legal-text">
+                        By registering, you agree to our <strong>Terms of Service</strong> and <strong>Privacy Policy</strong>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                
+                const colors = ['#00f5d4', '#7b2cbf', '#ff6b6b', '#ffd93d'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                container.appendChild(particle);
+            }
+        }
+
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 500;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 5;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x00f5d4,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 2;
+
+            let mouseX = 0;
+            let mouseY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = event.clientX / window.innerWidth - 0.5;
+                mouseY = event.clientY / window.innerHeight - 0.5;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.001;
+
+                particlesMesh.rotation.y += mouseX * 0.05;
+                particlesMesh.rotation.x += mouseY * 0.05;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function switchTab(tab) {
+            const slider = document.getElementById('tabSlider');
+            const title = document.getElementById('authTitle');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabs = document.querySelectorAll('.tab-switch-btn');
+
+            if (tab === 'login') {
+                slider.style.transform = 'translateX(0)';
+                title.innerText = 'Welcome Back';
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                slider.style.transform = 'translateX(100%)';
+                title.innerText = 'Join Finerva';
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+                tabs[1].classList.add('active');
+                tabs[0].classList.remove('active');
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 4000);
+        }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loader"></span>Loading...';
+            } else {
+                btn.disabled = false;
+                if (btnId === 'loginBtn') {
+                    btn.innerHTML = '<span>Sign In →</span>';
+                } else {
+                    btn.innerHTML = '<span>Create Account →</span>';
+                }
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            setLoading('loginBtn', true);
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    const btn = document.getElementById('loginBtn');
+                    btn.innerHTML = '<span>✓ Welcome!</span>';
+                    btn.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'learningmodule.html';
+                    }, 500);
+                } else {
+                    showError(data.error || 'Login failed');
+                    setLoading('loginBtn', false);
+                }
+            } catch (error) {
+                showError('Cannot connect to server. Is it running?');
+                console.error(error);
+                setLoading('loginBtn', false);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (!name || !email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            setLoading('regBtn', true);
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    const btn = document.getElementById('regBtn');
+                    btn.innerHTML = '<span>✓ Account Created!</span>';
+                    btn.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'learningmodule.html';
+                    }, 500);
+                } else {
+                    showError(data.error || 'Registration failed');
+                    setLoading('regBtn', false);
+                }
+            } catch (error) {
+                showError('Cannot connect to server. Is it running?');
+                console.error(error);
+                setLoading('regBtn', false);
+            }
+        }
+
+        createParticles();
+        initThreeJS();
+
+        document.querySelectorAll('.submit-btn, .feature-item, .tab-switch-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.transition = 'all 0.2s ease';
+            });
+        });
+    </script>
+</body>
+</html>

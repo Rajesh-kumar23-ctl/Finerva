@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finerva | AI Stock Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+        :root {
+            --primary: #00f5d4;
+            --secondary: #7b2cbf;
+            --accent: #ff6b6b;
+            --gold: #ffd93d;
+            --dark: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-white: #ffffff;
+        }
+
+        body {
+            background: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-white);
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(0, 245, 212, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(123, 44, 191, 0.08) 0%, transparent 50%);
+            animation: bgMove 15s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(2%, 2%); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Predictor Card */
+        .predictor-card {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .predictor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: 0.6s;
+        }
+
+        .predictor-card:hover::before {
+            left: 100%;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 212, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 245, 212, 0.5); }
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-white);
+        }
+
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        .ticker-input {
+            width: 100%;
+            padding: 18px 20px;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text-white);
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .ticker-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 245, 212, 0.2);
+        }
+
+        .ticker-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* Buttons */
+        .button-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .predict-btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .predict-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .predict-btn:hover::before {
+            left: 100%;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .bull {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: var(--text-white);
+        }
+
+        .bear {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: var(--text-white);
+        }
+
+        .analyse-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--secondary), #5b21b6);
+            border: none;
+            border-radius: 14px;
+            color: var(--text-white);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .analyse-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(123, 44, 191, 0.3);
+        }
+
+        /* Result Section */
+        .result-section {
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stock-name {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--text-white);
+        }
+
+        .movement-indicator {
+            text-align: center;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .movement-indicator.up {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .movement-indicator.down {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .movement-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-white);
+        }
+
+        .movement-indicator.up .movement-text { color: #10b981; }
+        .movement-indicator.down .movement-text { color: #ef4444; }
+
+        .profit-loss {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-white);
+        }
+
+        .profit-loss.profit { color: #10b981; }
+        .profit-loss.loss { color: #ef4444; }
+
+        /* Chart */
+        .chart-container {
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Analysis */
+        .analysis-box {
+            padding: 20px;
+            background: var(--glass);
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .analysis-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .analysis-list {
+            list-style: none;
+        }
+
+        .analysis-list li {
+            padding: 8px 0;
+            color: var(--text-white);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analysis-list li::before {
+            content: '→';
+            color: var(--primary);
+        }
+
+        /* Retry Button */
+        .retry-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 245, 212, 0.3);
+        }
+
+        /* Loading */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .predictor-card {
+                padding: 24px;
+            }
+            
+            .button-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">Finerva</div>
+        <div class="nav-links">
+            <a href="learningmodule.html">Dashboard</a>
+            <a href="STOCKPREDICTOR.html" class="active">Stock Predictor</a>
+            <a href="portfolio analyser.html">Portfolio</a>
+            <a href="newsintellligence.html">News</a>
+            <a href="ai advisor.html">AI Advisor</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="predictor-card">
+            <div class="card-header">
+                <div class="card-icon">📈</div>
+                <h1 class="card-title">AI Market Predictor</h1>
+                <p class="card-subtitle">Simulated AI Stock Momentum Analysis</p>
+            </div>
+
+            <div id="inputSection">
+                <div class="input-section">
+                    <input type="text" id="ticker" class="ticker-input" placeholder="ENTER TICKER (TSLA, NVDA, AAPL)" maxlength="10">
+                </div>
+                <div class="button-row">
+                    <button class="predict-btn bull" onclick="predict('UP')">
+                        <span>🟢 GROW ▲</span>
+                    </button>
+                    <button class="predict-btn bear" onclick="predict('DOWN')">
+                        <span>🔴 DOWN ▼</span>
+                    </button>
+                </div>
+                <button class="analyse-btn" onclick="analyseStock()">
+                    🔍 ANALYSE
+                </button>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div class="stock-name" id="stockName"></div>
+                
+                <div class="movement-indicator" id="movementIndicator">
+                    <div class="movement-text" id="movementText"></div>
+                </div>
+
+                <div class="profit-loss" id="profitLoss"></div>
+
+                <div class="chart-container">
+                    <canvas id="stockChart"></canvas>
+                </div>
+
+                <div class="analysis-box">
+                    <div class="analysis-title">🤖 AI Analysis:</div>
+                    <ul class="analysis-list" id="analysisList"></ul>
+                </div>
+
+                <button class="retry-btn" onclick="resetPredictor()">🔄 New Prediction</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chartInstance = null;
+
+        function predict(userChoice) {
+            const ticker = document.getElementById('ticker').value.trim().toUpperCase();
+            
+            if (!ticker) {
+                alert('Please enter a stock ticker');
+                return;
+            }
+
+            // Simulate AI processing
+            const bullBtn = document.querySelector('.bull span');
+            const bearBtn = document.querySelector('.bear span');
+            bullBtn.innerHTML = '<span class="loader"></span>Analyzing...';
+            bearBtn.innerHTML = '<span class="loader"></span>Analyzing...';
+            
+            setTimeout(() => {
+                // Generate random result
+                const isUp = Math.random() > 0.5;
+                const percentage = (Math.random() * 4 + 1).toFixed(2);
+                const actualDirection = isUp ? "UP" : "DOWN";
+
+                // Hide input, show result
+                document.getElementById('inputSection').style.display = 'none';
+                document.getElementById('resultSection').classList.add('show');
+
+                // Set stock name
+                document.getElementById('stockName').innerText = ticker;
+
+                // Set movement
+                const indicator = document.getElementById('movementIndicator');
+                const movementText = document.getElementById('movementText');
+                
+                if (isUp) {
+                    indicator.className = 'movement-indicator up';
+                    movementText.innerText = '📈 MARKET MOVED UP ▲';
+                } else {
+                    indicator.className = 'movement-indicator down';
+                    movementText.innerText = '📉 MARKET MOVED DOWN ▼';
+                }
+
+                // Calculate profit/loss
+                let userProfit = userChoice === actualDirection;
+                const profitLoss = document.getElementById('profitLoss');
+                
+                if (userProfit) {
+                    profitLoss.innerText = `+${percentage}% PROFIT 💰`;
+                    profitLoss.className = 'profit-loss profit';
+                } else {
+                    profitLoss.innerText = `-${percentage}% LOSS 📉`;
+                    profitLoss.className = 'profit-loss loss';
+                }
+
+                // AI Analysis
+                const explanations = [
+                    "Volume spike indicated institutional activity.",
+                    "Momentum indicators confirmed breakout direction.",
+                    "Sector sentiment aligned with macro-economic signals.",
+                    "Technical patterns suggest continued momentum.",
+                    "AI models detect positive/negative divergence."
+                ];
+
+                const shuffled = explanations.sort(() => Math.random() - 0.5).slice(0, 3);
+                document.getElementById('analysisList').innerHTML = 
+                    shuffled.map(e => `<li>${e}</li>`).join('');
+
+                // Generate chart
+                generateChart(userProfit);
+
+                // Reset buttons
+                bullBtn.innerHTML = '<span>🟢 GROW ▲</span>';
+                bearBtn.innerHTML = '<span>🔴 DOWN ▼</span>';
+            }, 1500);
+        }
+
+        function analyseStock() {
+            const ticker = document.getElementById('ticker').value.trim().toUpperCase();
+            
+            if (!ticker) {
+                alert('Please enter a stock ticker');
+                return;
+            }
+
+            // Show analysis in a popup or expand the section
+            const analysisHTML = `
+                <div class="stock-name">${ticker}</div>
+                <div class="movement-indicator up">
+                    <div class="movement-text">📊 AI ANALYSIS COMPLETE</div>
+                </div>
+                <div class="analysis-box" style="margin-top: 20px;">
+                    <div class="analysis-title">📈 Technical Indicators:</div>
+                    <ul class="analysis-list">
+                        <li>RSI: ${(Math.random() * 40 + 30).toFixed(1)} (${Math.random() > 0.5 ? 'Overbought' : 'Oversold'})</li>
+                        <li>MACD: ${Math.random() > 0.5 ? 'Bullish' : 'Bearish'} Crossover</li>
+                        <li>Moving Avg: Price above ${Math.random() > 0.5 ? '50-day' : '200-day'} MA</li>
+                        <li>Volume: ${(Math.random() * 5 + 1).toFixed(1)}M shares</li>
+                    </ul>
+                    <div class="analysis-title" style="margin-top: 16px;">🎯 AI Recommendation:</div>
+                    <ul class="analysis-list">
+                        <li>Entry Point: $${(Math.random() * 50 + 100).toFixed(2)}</li>
+                        <li>Target: $${(Math.random() * 80 + 120).toFixed(2)}</li>
+                        <li>Stop Loss: $${(Math.random() * 30 + 80).toFixed(2)}</li>
+                        <li>Risk/Reward: 1:${(Math.random() * 2 + 1).toFixed(1)}</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('inputSection').style.display = 'none';
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('resultSection').innerHTML = analysisHTML + `
+                <button class="retry-btn" onclick="resetPredictor()">🔄 New Analysis</button>
+            `;
+        }
+
+        function generateChart(userProfit) {
+            const ctx = document.getElementById('stockChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            let base = 100;
+            const dataPoints = [];
+
+            for (let i = 0; i < 25; i++) {
+                base += userProfit
+                    ? Math.random() * 2 + 0.5
+                    : -(Math.random() * 2 + 0.5);
+                dataPoints.push(base.toFixed(2));
+            }
+
+            const color = userProfit ? '#10b981' : '#ef4444';
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 25 }, (_, i) => i + 1),
+                    datasets: [{
+                        data: dataPoints,
+                        borderColor: color,
+                        backgroundColor: userProfit
+                            ? 'rgba(16, 185, 129, 0.2)'
+                            : 'rgba(239, 68, 68, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: color
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+        }
+
+        function resetPredictor() {
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('resultSection').innerHTML = `
+                <div class="stock-name" id="stockName"></div>
+                <div class="movement-indicator" id="movementIndicator">
+                    <div class="movement-text" id="movementText"></div>
+                </div>
+                <div class="profit-loss" id="profitLoss"></div>
+                <div class="chart-container">
+                    <canvas id="stockChart"></canvas>
+                </div>
+                <div class="analysis-box">
+                    <div class="analysis-title">🤖 AI Analysis:</div>
+                    <ul class="analysis-list" id="analysisList"></ul>
+                </div>
+                <button class="retry-btn" onclick="resetPredictor()">🔄 New Prediction</button>
+            `;
+            document.getElementById('ticker').value = '';
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('ticker').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                predict('UP'); // Default to UP prediction
+            }
+        });
+    </script>
+</body>
+</html>

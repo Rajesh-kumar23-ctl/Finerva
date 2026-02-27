@@ -1,5 +1,7 @@
-# Finerva
+# Finerva - AI Financial Intelligence Platform
+
 Finerva is an AI-powered financial platform offering stock prediction, portfolio management, real-time market news, and interactive learning modules for trading education.
+
 ## Features
 
 ### 1. **Authentication System**

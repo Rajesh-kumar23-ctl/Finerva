@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finerva | Access Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a192f 0%, #001f3f 50%, #0a192f 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Left Side - Branding */
+        .brand-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,174,239,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 20px 60px rgba(0,174,239,0.3);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .brand-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        .brand-title span {
+            background: linear-gradient(90deg, #00aeef, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-tagline {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
+        }
+
+        .feature-list {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0,174,239,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00aeef;
+        }
+
+        /* Right Side - Auth Form */
+        .auth-section {
+            width: 550px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            box-shadow: -20px 0 60px rgba(0,0,0,0.3);
+        }
+
+        .auth-header {
+            margin-bottom: 40px;
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #002d5b;
+            margin-bottom: 10px;
+        }
+
+        .auth-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .tab-container {
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 14px;
+            display: flex;
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .tab.active {
+            color: #002d5b;
+        }
+
+        .tab-slider {
+            position: absolute;
+            width: calc(50% - 6px);
+            height: calc(100% - 12px);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            top: 6px;
+            left: 6px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #002d5b;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #00aeef;
+            box-shadow: 0 0 0 4px rgba(0,174,239,0.1);
+            transform: scale(1.02);
+        }
+
+        .input-group input:hover {
+            border-color: #00aeef;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #00aeef, #0088cc);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,174,239,0.3);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,174,239,0.4);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .footer-links a {
+            color: #00aeef;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #0088cc;
+            text-decoration: underline;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: auto;
+        }
+
+        .legal-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: 25px;
+            line-height: 1.5;
+        }
+
+        .legal-text strong {
+            color: #002d5b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .brand-section {
+                display: none;
+            }
+
+            .auth-section {
+                width: 100%;
+                max-width: 550px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .auth-section {
+                padding: 40px 30px;
+            }
+
+            .auth-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Side - Branding -->
+    <div class="brand-section">
+        <div class="brand-content">
+            <div class="brand-logo">
+                <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="12" fill="white"/>
+                    <path d="M20 10L12 15V25L20 30L28 25V15L20 10Z" stroke="#00aeef" stroke-width="2.5"/>
+                    <circle cx="20" cy="20" r="4" fill="#00aeef"/>
+                </svg>
+            </div>
+            <h1 class="brand-title">Finerva</h1>
+            <p class="brand-tagline">Master your financial future with AI</p>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                            <polyline points="16 7 22 7 22 13"></polyline>
+                        </svg>
+                    </div>
+                    <span>Stock Predictor</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z"></path>
+                            <path d="M2 17L12 22L22 17"></path>
+                            <path d="M2 12L12 17L22 12"></path>
+                        </svg>
+                    </div>
+                    <span>AI Advisor</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+                            <path d="M18 14h-8"></path>
+                            <path d="M15 18h-5"></path>
+                            <path d="M10 6h8v4h-8V6Z"></path>
+                        </svg>
+                    </div>
+                    <span>News Intelligence</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side - Auth Form -->
+    <div class="auth-section">
+        <div class="auth-header">
+            <h2 class="auth-title" id="header-title">Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to access your financial dashboard</p>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-slider" id="slider"></div>
+            <button class="tab active" onclick="switchForm('login')">Login</button>
+            <button class="tab" onclick="switchForm('register')">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-section" class="form-section active">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="Enter your email (e.g., xyz@gmail.com)" id="login-email">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" placeholder="Enter your password" id="login-password">
+            </div>
+            <button class="submit-btn" onclick="handleLogin()">Sign In</button>
+            <div class="footer-links">
+                <label class="remember-me">
+                    <input type="checkbox"> Remember me
+                </label>
+                <a href="#">Forgot password?</a>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-section" class="form-section">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Enter your full name" id="reg-name">
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="Enter your email (e.g., xyz@gmail.com)" id="reg-email">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" placeholder="Create a password" id="reg-password">
+            </div>
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" placeholder="Confirm your password" id="reg-confirm-password">
+            </div>
+            <button class="submit-btn" onclick="handleRegister()">Create Account</button>
+            <p class="legal-text">By registering, you agree to our <br><strong>Terms & Privacy Policy</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Email validation function
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function switchForm(type) {
+            const slider = document.getElementById('slider');
+            const loginSection = document.getElementById('login-section');
+            const registerSection = document.getElementById('register-section');
+            const headerTitle = document.getElementById('header-title');
+            const tabs = document.querySelectorAll('.tab');
+
+            if (type === 'register') {
+                slider.style.transform = 'translateX(100%)';
+                loginSection.classList.remove('active');
+                registerSection.classList.add('active');
+                headerTitle.innerText = "Join Finerva";
+                tabs[1].classList.add('active');
+                tabs[0].classList.remove('active');
+            } else {
+                slider.style.transform = 'translateX(0)';
+                registerSection.classList.remove('active');
+                loginSection.classList.add('active');
+                headerTitle.innerText = "Welcome Back";
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            }
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                alert('Please enter a valid email address (e.g., xyz@gmail.com)');
+                return;
+            }
+
+            // Demo mode - proceed to dashboard
+            localStorage.setItem('userId', email);
+            localStorage.setItem('token', 'demo-token');
+            window.location.href = 'learningmodule.html';
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            
+            if (!name || !email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                alert('Please enter a valid email address (e.g., xyz@gmail.com)');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            // Demo mode - proceed to dashboard
+            localStorage.setItem('userId', email);
+            localStorage.setItem('token', 'demo-token');
+            window.location.href = 'learningmodule.html';
+        }
+    </script>
+</body>
+</html>

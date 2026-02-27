@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finerva | News Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+        :root {
+            --primary: #00f5d4;
+            --secondary: #7b2cbf;
+            --accent: #ff6b6b;
+            --gold: #ffd93d;
+            --dark: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --bullish: #10b981;
+            --bearish: #ef4444;
+            --text-white: #ffffff;
+        }
+
+        body {
+            background: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-white);
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(0, 245, 212, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(123, 44, 191, 0.06) 0%, transparent 40%);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 100px 5% 40px;
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header */
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .feed-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .refresh-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--bullish);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--bullish); }
+            50% { opacity: 0.5; box-shadow: 0 0 5px var(--bullish); }
+        }
+
+        /* News Card */
+        .news-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s ease forwards;
+            opacity: 0;
+        }
+
+        .news-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 245, 212, 0.1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .news-content {
+            padding: 24px;
+        }
+
+        .news-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 245, 212, 0.15);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: var(--text-white);
+        }
+
+        .news-summary {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* AI Action Bar */
+        .ai-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .impact-score {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .impact-score span {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .ai-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 245, 212, 0.3);
+        }
+
+        /* AI Chat */
+        .news-ai-chat {
+            display: none;
+            padding: 20px 24px;
+            background: rgba(0, 245, 212, 0.05);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .news-ai-chat.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .sentiment-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .sentiment-badge.bullish {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--bullish);
+        }
+
+        .sentiment-badge.bearish {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--bearish);
+        }
+
+        .ai-insight {
+            font-size: 0.9rem;
+            color: var(--text-white);
+            line-height: 1.5;
+        }
+
+        .ai-insight strong {
+            color: var(--primary);
+        }
+
+        /* Notification Popup */
+        .notification-popup {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            max-width: 350px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 20px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 60px rgba(0, 245, 212, 0.2);
+        }
+
+        .notification-popup.show {
+            transform: translateX(0);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .notification-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .notification-close:hover {
+            color: var(--text-white);
+        }
+
+        .notification-body {
+            font-size: 0.85rem;
+            color: var(--text-white);
+            line-height: 1.5;
+        }
+
+        .notification-btn {
+            margin-top: 16px;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: var(--dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 245, 212, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 100px 4% 40px;
+            }
+
+            .notification-popup {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+
+    <!-- Notification Popup -->
+    <div class="notification-popup" id="notificationPopup">
+        <div class="notification-header">
+            <span class="notification-title">🔔 Breaking News</span>
+            <button class="notification-close" onclick="closeNotification()">×</button>
+        </div>
+        <p class="notification-body" id="notificationBody"></p>
+        <button class="notification-btn" onclick="viewNews()">View Details →</button>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">Finerva</div>
+        <div class="nav-links">
+            <a href="learningmodule.html">Dashboard</a>
+            <a href="STOCKPREDICTOR.html">Stock Predictor</a>
+            <a href="portfolio analyser.html">Portfolio</a>
+            <a href="newsintellligence.html" class="active">News</a>
+            <a href="ai advisor.html">AI Advisor</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="feed-header">
+            <h1 class="feed-title">📰 Live News Intelligence</h1>
+            <div class="refresh-status">
+                <span class="live-dot"></span>
+                Live Updates
+            </div>
+        </div>
+
+        <div id="news-feed">
+            <!-- News cards will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const topics = ["NVIDIA", "Tesla", "Bitcoin", "Apple", "Gold", "Microsoft", "Amazon", "Federal Reserve", "S&P 500", "Crypto"];
+        const headlines = [
+            "Surges on Strong Earnings Report",
+            "Faces Regulatory Scrutiny",
+            "Breaks Major Resistance Level",
+            "Institutional Buying Detected",
+            "Announces Strategic Partnership",
+            "Market Volatility Increases",
+            "Analysts Upgrade Price Target",
+            "CEO Comments on Growth Strategy"
+        ];
+
+        let previousHeadlines = [];
+        let notificationTimeout = null;
+
+        function fetchNews() {
+            const newsData = Array.from({ length: 6 }, () => {
+                const topic = topics[Math.floor(Math.random() * topics.length)];
+                const headline = headlines[Math.floor(Math.random() * headlines.length)];
+                return {
+                    title: `${topic} ${headline}`,
+                    description: "AI market scanner detected significant momentum. Real-time liquidity shifts and sector rotation are being monitored.",
+                    source: "Finerva Live"
+                };
+            });
+
+            renderNews(newsData);
+            checkForNewArticles(newsData.map(n => n.title));
+            previousHeadlines = newsData.map(n => n.title);
+        }
+
+        function renderNews(newsData) {
+            const container = document.getElementById('news-feed');
+            container.innerHTML = '';
+
+            newsData.forEach((article, index) => {
+                const sentiment = Math.random() > 0.5 ? 'bullish' : 'bearish';
+                const sentimentText = sentiment === 'bullish' ? '🟢 BULLISH' : '🔴 BEARISH';
+                const bg = sentiment === 'bullish' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+                const color = sentiment === 'bullish' ? '#10b981' : '#ef4444';
+                const impact = Math.floor(Math.random() * 20 + 80);
+
+                const card = document.createElement('div');
+                card.className = 'news-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <div class="news-content">
+                        <span class="news-tag">${article.source} • Live</span>
+                        <h3 class="news-title">${article.title}</h3>
+                        <p class="news-summary">${article.description}</p>
+                    </div>
+                    <div class="ai-action-bar">
+                        <span class="impact-score">Impact Score: <span>${impact}%</span></span>
+                        <button class="ai-btn" onclick="toggleAnalysis('${index}')">
+                            ✨ AI Analysis
+                        </button>
+                    </div>
+                    <div id="ai-${index}" class="news-ai-chat">
+                        <span class="sentiment-badge" style="background: ${bg}; color: ${color};">
+                            ${sentimentText}
+                        </span>
+                        <p class="ai-insight">
+                            <strong>AI Insight:</strong> This update suggests ${sentiment} momentum. 
+                            Monitor volume and key support/resistance levels for entry/exit signals.
+                        </p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleAnalysis(index) {
+            const el = document.getElementById(`ai-${index}`);
+            el.classList.toggle('show');
+        }
+
+        function checkForNewArticles(newHeadlines) {
+            newHeadlines.forEach(headline => {
+                if (!previousHeadlines.includes(headline)) {
+                    showNotification(headline);
+                }
+            });
+        }
+
+        function showNotification(headline) {
+            const popup = document.getElementById('notificationPopup');
+            const body = document.getElementById('notificationBody');
+            
+            body.innerHTML = `<strong>${headline}</strong><br><br>New market update detected. Click to view details.`;
+            popup.classList.add('show');
+
+            // Auto close after 8 seconds
+            if (notificationTimeout) clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
+                closeNotification();
+            }, 8000);
+        }
+
+        function closeNotification() {
+            document.getElementById('notificationPopup').classList.remove('show');
+        }
+
+        function viewNews() {
+            closeNotification();
+            // Scroll to top to show news
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function simulateFreshNews() {
+            fetchNews();
+        }
+
+        // Initialize
+        fetchNews();
+        
+        // Auto-refresh every 15 seconds for notifications
+        setInterval(fetchNews, 15000);
+    </script>
+</body>
+</html>

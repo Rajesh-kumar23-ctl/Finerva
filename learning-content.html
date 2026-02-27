@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finerva | Learning Module</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+
+        :root {
+            --primary: #00f5d4;
+            --secondary: #7b2cbf;
+            --accent: #ff6b6b;
+            --dark: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-white: #ffffff;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 245, 212, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 100px 5% 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Module Header */
+        .module-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .module-number {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .module-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-white), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .module-desc {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .content-text p {
+            margin-bottom: 16px;
+        }
+
+        .key-points {
+            margin-top: 24px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(0, 245, 212, 0.05);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .key-point-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .quiz-section.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-progress {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .quiz-dot {
+            width: 40px;
+            height: 6px;
+            background: var(--glass-border);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-dot.correct {
+            background: #10b981;
+        }
+
+        .quiz-dot.wrong {
+            background: var(--accent);
+        }
+
+        .quiz-dot.current {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .question-card {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px 20px;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: rgba(0, 245, 212, 0.05);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(0, 245, 212, 0.1);
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .option.wrong {
+            border-color: var(--accent);
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .option.disabled {
+            pointer-events: none;
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: var(--glass-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .option.correct .option-letter {
+            background: #10b981;
+        }
+
+        .option.wrong .option-letter {
+            background: var(--accent);
+        }
+
+        /* Explanation */
+        .explanation {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .explanation.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .explanation.wrong {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation.correct .explanation-title {
+            color: #10b981;
+        }
+
+        .explanation.wrong .explanation-title {
+            color: var(--accent);
+        }
+
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 245, 212, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-white);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results */
+        .results-section {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        .results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .results-score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .results-message {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+        }
+
+        /* Completion Badge */
+        .completion-badge {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 30px;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 212, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 245, 212, 0.6); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .module-title {
+                font-size: 1.8rem;
+            }
+            .content-section, .quiz-section {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">Finerva</div>
+        <a href="learningmodule.html" class="back-btn">← Back to Dashboard</a>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Module Content -->
+        <div id="contentSection">
+            <div class="module-header">
+                <span class="module-number" id="moduleNumber">Module 1 of 20</span>
+                <h1 class="module-title" id="moduleTitle">Stock Market Basics</h1>
+                <p class="module-desc" id="moduleDesc">Understanding the fundamentals of financial markets and investing</p>
+            </div>
+
+            <div class="content-section">
+                <h2 class="section-title">📚 Study Material</h2>
+                <div class="content-text" id="studyContent">
+                    <!-- Content will be inserted by JavaScript -->
+                </div>
+
+                <div class="key-points" id="keyPoints">
+                    <!-- Key points will be inserted by JavaScript -->
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="startQuiz()" style="width: 100%;">
+                ✓ Mark as Read & Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="quiz-section" id="quizSection">
+            <div class="quiz-progress" id="quizProgress">
+                <!-- Quiz dots will be inserted by JavaScript -->
+            </div>
+
+            <div class="question-card" id="questionCard">
+                <!-- Question will be inserted by JavaScript -->
+            </div>
+
+            <div class="explanation" id="explanation">
+                <!-- Explanation will be inserted by JavaScript -->
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>← Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="results-icon" id="resultsIcon">🎉</div>
+            <h2 class="results-title" id="resultsTitle">Module Complete!</h2>
+            <div class="results-score" id="resultsScore">5/5</div>
+            <p class="results-message" id="resultsMessage">Perfect score! You've mastered this module.</p>
+            <div class="btn-container">
+                <a href="learningmodule.html" class="btn btn-primary">Back to Dashboard</a>
+                <button class="btn btn-secondary" id="retryBtn" onclick="retryQuiz()">Retry Quiz</button>
+            </div>
+            <div class="completion-badge" id="completionBadge">✓ Module Completed</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Learning Modules Data - 20 Modules
+        const modules = [
+            {
+                id: 1,
+                title: "Stock Market Basics",
+                description: "Understanding the fundamentals of financial markets and investing",
+                content: `<p>The stock market is a collection of markets where stocks (pieces of ownership in businesses) are traded between investors. It serves as a platform where companies can raise capital by selling shares to the public, and investors can buy and sell these ownership stakes.</p>
+                <p>Stock markets operate through exchanges, with major examples including the New York Stock Exchange (NYSE) and NASDAQ. These exchanges facilitate trading between buyers and sellers, establishing prices based on supply and demand.</p>
+                <p>When you buy a stock, you become a shareholder - meaning you own a small piece of that company. Your goal as an investor is to buy stocks at a low price and sell them at a higher price, generating profits through capital appreciation.</p>`,
+                keyPoints: [
+                    { icon: "📈", text: "Stocks represent ownership in a company" },
+                    { icon: "🏢", text: "Exchanges like NYSE facilitate trading" },
+                    { icon: "💰", text: "Profits come from price appreciation" },
+                    { icon: "📊", text: "Market prices determined by supply and demand" }
+                ],
+                questions: [
+                    { q: "What is a stock?", opts: ["A loan to a company", "Ownership in a company", "A type of bond", "A government security"], correct: 1, reason: "Stocks represent partial ownership (equity) in a company." },
+                    { q: "Where are stocks primarily traded?", opts: ["Banks", "Stock exchanges", "Insurance companies", "Real estate markets"], correct: 1, reason: "Stocks are traded on stock exchanges like NYSE and NASDAQ." },
+                    { q: "What determines stock prices?", opts: ["Company CEO", "Government", "Supply and demand", "Fixed interest rate"], correct: 2, reason: "Stock prices are determined by market forces of supply and demand." },
+                    { q: "What do you become when you buy a stock?", opts: ["Creditor", "Shareholder", "Employee", "Director"], correct: 1, reason: "Buying stock makes you a shareholder - an owner of the company." },
+                    { q: "What is the main goal of stock investing?", opts: ["Guaranteed returns", "Tax avoidance", "Capital appreciation", "Loan forgiveness"], correct: 2, reason: "The primary goal is capital appreciation - buying low and selling high." }
+                ]
+            },
+            {
+                id: 2,
+                title: "Understanding Stock Prices",
+                description: "Learn what drives stock prices up and down",
+                content: `<p>Stock prices fluctuate based on numerous factors, including company performance, economic conditions, market sentiment, and global events. Understanding these drivers is crucial for making informed investment decisions.</p>
+                <p>Fundamental analysis examines a company's financials, management, and competitive position to determine its intrinsic value. Technical analysis, on the other hand, studies price patterns and trading volumes to predict future movements.</p>
+                <p>Market capitalization (market cap) is calculated by multiplying a company's stock price by its total shares outstanding. This metric helps categorize companies as small-cap, mid-cap, or large-cap.</p>`,
+                keyPoints: [
+                    { icon: "📊", text: "Prices driven by company performance" },
+                    { icon: "🔍", text: "Fundamental analysis finds intrinsic value" },
+                    { icon: "📐", text: "Market cap = Price × Shares Outstanding" },
+                    { icon: "📉", text: "Multiple factors affect price movements" }
+                ],
+                questions: [
+                    { q: "What is market capitalization?", opts: ["Annual revenue", "Total debt", "Stock price × shares outstanding", "Monthly profits"], correct: 2, reason: "Market cap is calculated by multiplying stock price by total shares." },
+                    { q: "What is fundamental analysis?", opts: ["Chart patterns", "Company financial analysis", "Random guessing", "Weather forecasting"], correct: 1, reason: "Fundamental analysis evaluates a company's financials and value." },
+                    { q: "Which is NOT a factor affecting stock prices?", opts: ["Earnings", "Economic conditions", "Company color scheme", "Market sentiment"], correct: 2, reason: "Company color scheme has no impact on stock prices." },
+                    { q: "What do technical analysts study?", opts: ["CEO backgrounds", "Price patterns and volumes", "Office locations", "Employee count"], correct: 1, reason: "Technical analysis studies historical price patterns and trading volumes." },
+                    { q: "Large-cap companies typically have market cap over:", opts: ["$1 million", "$10 billion", "$2 billion", "$500 million"], correct: 2, reason: "Large-cap typically refers to companies with $2 billion+ market cap." }
+                ]
+            },
+            {
+                id: 3,
+                title: "Types of Stocks",
+                description: "Growth, value, blue chip, and penny stocks explained",
+                content: `<p>Stocks are categorized in various ways based on characteristics like size, performance, and sector. Understanding these categories helps investors build diversified portfolios aligned with their goals.</p>
+                <p>Growth stocks are companies expected to grow faster than the market average, often reinvesting profits rather than paying dividends. Value stocks trade below their intrinsic value, considered undervalued by investors.</p>
+                <p>Blue chip stocks belong to large, established, financially sound companies with a history of stable performance. Penny stocks are low-priced stocks of small companies, offering high risk and potential reward.</p>`,
+                keyPoints: [
+                    { icon: "🚀", text: "Growth stocks focus on expansion" },
+                    { icon: "💎", text: "Blue chips are stable, established companies" },
+                    { icon: "💰", text: "Value stocks may be undervalued" },
+                    { icon: "🎰", text: "Penny stocks are high-risk speculations" }
+                ],
+                questions: [
+                    { q: "What are blue chip stocks?", opts: ["Cheap stocks", "Stable large companies", "New startups", "Government bonds"], correct: 1, reason: "Blue chips are large, established companies with stable performance." },
+                    { q: "Growth stocks typically:", opts: ["Pay high dividends", "Reinvest profits", "Have no growth", "Are government-owned"], correct: 1, reason: "Growth companies reinvest earnings for expansion rather than paying dividends." },
+                    { q: "Penny stocks are known for:", opts: ["Low risk", "High risk/reward", "Guaranteed returns", "Stable prices"], correct: 1, reason: "Penny stocks are volatile with high risk and potential reward." },
+                    { q: "Value stocks are considered:", opts: ["Overpriced", "Undervalued", "Illegal", "Untradeable"], correct: 1, reason: "Value stocks trade below their intrinsic or book value." },
+                    { q: "Which stock type pays regular dividends?", opts: ["Growth stocks", "Penny stocks", "Blue chips often do", "All stocks"], correct: 2, reason: "Blue chip companies often pay consistent dividends to shareholders." }
+                ]
+            },
+            {
+                id: 4,
+                title: "How to Buy Stocks",
+                description: "Step-by-step guide to purchasing your first stock",
+                content: `<p>Buying stocks has become more accessible than ever with online brokerage platforms. Before investing, you need to complete account setup, fund your account, and research potential investments.</p>
+                <p>To begin, open a brokerage account with a reputable firm. Many offer zero-commission trading. After funding your account through bank transfer, you can place buy orders for stocks.</p>
+                <p>Order types matter: market orders execute immediately at current price, while limit orders only execute at your specified price or better. Understanding order types helps manage execution quality.</p>`,
+                keyPoints: [
+                    { icon: "🏦", text: "Open a brokerage account first" },
+                    { icon: "💳", text: "Fund account via bank transfer" },
+                    { icon: "📝", text: "Place buy orders through platform" },
+                    { icon: "⚙️", text: "Understand market vs limit orders" }
+                ],
+                questions: [
+                    { q: "What is a market order?", opts: ["Buy at your set price", "Buy at current market price", "Sell only", "Cancel order"], correct: 1, reason: "Market orders execute immediately at the current market price." },
+                    { q: "What does a limit order do?", opts: ["Executes immediately", "Sets maximum buy price", "Guarantees execution", "Requires physical certificate"], correct: 1, reason: "Limit orders only execute at your specified price or better." },
+                    { q: "To buy stocks you need:", opts: ["Physical certificate", "Brokerage account", "Stock exchange membership", "Government license"], correct: 1, reason: "You need a brokerage account to buy and sell stocks." },
+                    { q: "How do you fund a brokerage account?", opts: ["Cash only", "Credit card only", "Bank transfer", "Cryptocurrency only"], correct: 2, reason: "Bank transfers are the standard method to fund brokerage accounts." },
+                    { q: "Zero-commission trading means:", opts: ["All trades free", "Hidden fees exist", "Only for stocks", "Only for options"], correct: 0, reason: "Zero-commission means no trading fees for stock trades." }
+                ]
+            },
+            {
+                id: 5,
+                title: "Portfolio Diversification",
+                description: "Why putting all eggs in one basket is risky",
+                content: `<p>Diversification is a risk management strategy that involves spreading investments across various assets, sectors, and geographies. The goal is to minimize the impact of poor performance from any single investment.</p>
+                <p>Modern Portfolio Theory suggests that an optimally diversified portfolio can maximize returns for a given level of risk. This is achieved through assets that don't move together perfectly.</p>
+                <p>Correlation measures how two assets move relative to each other. Assets with low or negative correlation provide better diversification benefits than those moving together.</p>`,
+                keyPoints: [
+                    { icon: "🧩", text: "Spread investments across assets" },
+                    { icon: "📉", text: "Reduces impact of single losses" },
+                    { icon: "🔗", text: "Low correlation = better diversification" },
+                    { icon: "⚖️", text: "Balance risk and return" }
+                ],
+                questions: [
+                    { q: "What is portfolio diversification?", opts: ["Buying one stock", "Spreading investments", "Only investing in bonds", "Keeping all cash"], correct: 1, reason: "Diversification spreads investments across various assets to reduce risk." },
+                    { q: "What is correlation in investments?", opts: ["Stock price", "How assets move together", "Annual return", "Trading volume"], correct: 1, reason: "Correlation measures the relationship between asset price movements." },
+                    { q: "What is the benefit of diversification?", opts: ["Higher guaranteed returns", "Lower risk", "Tax benefits", "No benefits"], correct: 1, reason: "Diversification reduces portfolio risk through spreading." },
+                    { q: "Modern Portfolio Theory aims to:", opts: ["Maximize risk", "Maximize returns for given risk", "Minimize returns", "Eliminate all risk"], correct: 1, reason: "MPT optimizes risk-adjusted returns through asset allocation." },
+                    { q: "Assets with negative correlation:", opts: ["Move together", "Move opposite directions", "Have no relationship", "Are the same asset"], correct: 1, reason: "Negatively correlated assets move in opposite directions." }
+                ]
+            },
+            {
+                id: 6,
+                title: "Risk and Return",
+                description: "Understanding the risk-return tradeoff",
+                content: `<p>Risk and return are fundamentally linked in investing. Higher potential returns typically come with higher risk, and understanding this relationship is essential for building a suitable portfolio.</p>
+                <p>Risk can be measured in various ways: standard deviation measures volatility, beta measures systematic risk relative to the market, and drawdown measures peak-to-trough decline.</p>
+                <p>Risk tolerance depends on your financial goals, time horizon, and personal comfort with loss. Younger investors typically have higher risk tolerance due to longer time to recover losses.</p>`,
+                keyPoints: [
+                    { icon: "⚖️", text: "Higher returns require higher risk" },
+                    { icon: "📊", text: "Standard deviation measures volatility" },
+                    { icon: "⏰", text: "Time horizon affects risk tolerance" },
+                    { icon: "🎯", text: "Match risk to your profile" }
+                ],
+                questions: [
+                    { q: "What is the risk-return tradeoff?", opts: ["No relationship", "Higher risk = higher potential return", "Lower risk = higher return", "Risk eliminates returns"], correct: 1, reason: "Higher potential returns typically require accepting more risk." },
+                    { q: "Standard deviation measures:", opts: ["Average return", "Price volatility", "Company size", "Dividend yield"], correct: 1, reason: "Standard deviation quantifies the dispersion of returns - volatility." },
+                    { q: "Beta measures:", opts: ["Total risk", "Systematic market risk", "Company debt", "Dividend payments"], correct: 1, reason: "Beta measures a stock's sensitivity to market movements." },
+                    { q: "Younger investors typically have:", opts: ["Lower risk tolerance", "Higher risk tolerance", "No risk tolerance", "Fixed risk tolerance"], correct: 1, reason: "Longer time horizons allow younger investors to take more risk." },
+                    { q: "Risk tolerance depends on:", opts: ["Only age", "Goals, time horizon, personal comfort", "Only wealth", "Only education"], correct: 1, reason: "Risk tolerance is personal and depends on multiple factors." }
+                ]
+            },
+            {
+                id: 7,
+                title: "Stock Analysis Methods",
+                description: "Fundamental vs technical analysis explained",
+                content: `<p>Investors use various methods to analyze stocks and make investment decisions. The two primary approaches are fundamental analysis and technical analysis, each with distinct methodologies and timeframes.</p>
+                <p>Fundamental analysis examines financial statements, competitive positioning, management quality, and industry conditions to determine a stock's intrinsic value. Investors look for undervalued stocks.</p>
+                <p>Technical analysis focuses on price patterns, trading volumes, and statistical indicators to predict future price movements. It's based on the idea that market prices reflect all relevant information.</p>`,
+                keyPoints: [
+                    { icon: "🔬", text: "Fundamental: analyze company value" },
+                    { icon: "📈", text: "Technical: analyze price patterns" },
+                    { icon: "📋", text: "Review financial statements" },
+                    { icon: "📊", text: "Study chart indicators" }
+                ],
+                questions: [
+                    { q: "Fundamental analysis studies:", opts: ["Chart patterns", "Company financials", "Trading volume only", "Random numbers"], correct: 1, reason: "Fundamental analysis examines financial health and business value." },
+                    { q: "Technical analysis is based on:", opts: ["Company news", "Historical price patterns", "CEO interviews", "Product reviews"], correct: 1, reason: "Technical analysis uses historical price and volume data." },
+                    { q: "Intrinsic value is:", opts: ["Current stock price", "True underlying value", "Market cap", "Dividend amount"], correct: 1, reason: "Intrinsic value represents the true worth of a company." },
+                    { q: "P/E ratio is used in:", opts: ["Technical analysis", "Fundamental analysis", "Random analysis", "No analysis"], correct: 1, reason: "P/E (price-to-earnings) is a fundamental valuation metric." },
+                    { q: "Moving averages are:", opts: ["Fundamental metrics", "Technical indicators", "Company debts", "Legal requirements"], correct: 1, reason: "Moving averages are technical tools showing price trends." }
+                ]
+            },
+            {
+                id: 8,
+                title: "Dividends Explained",
+                description: "Understanding dividend payments and yield",
+                content: `<p>Dividends are payments made by companies to shareholders, typically from profits. They provide income and signal financial health, though not all companies pay dividends.</p>
+                <p>Dividend yield shows annual dividends as a percentage of stock price. Dividend payout ratio indicates what portion of earnings is paid as dividends. Growth investors often prefer companies reinvesting profits.</p>
+                <p>Companies with "dividend aristocrats" have increased dividends for 25+ consecutive years. DRIP (Dividend Reinvestment Plan) automatically uses dividends to buy more shares.</p>`,
+                keyPoints: [
+                    { icon: "💵", text: "Dividends are profit payments" },
+                    { icon: "📊", text: "Yield = Annual dividends ÷ Price" },
+                    { icon: "👑", text: "Dividend aristocrats raise payouts 25+ years" },
+                    { icon: "🔄", text: "DRIP reinvests dividends automatically" }
+                ],
+                questions: [
+                    { q: "What are dividends?", opts: ["Stock splits", "Company profit payments", "Loan interest", "Tax refunds"], correct: 1, reason: "Dividends are portions of company profits paid to shareholders." },
+                    { q: "Dividend yield is:", opts: ["Total dividends paid", "Dividends as % of price", "Stock price", "Company revenue"], correct: 1, reason: "Yield equals annual dividends divided by stock price." },
+                    { q: "Dividend aristocrats have:", opts: ["Never paid dividends", "Raised dividends 25+ years", "Lowest yields", "One-time payments"], correct: 1, reason: "Aristocrats have 25+ years of consecutive dividend increases." },
+                    { q: "DRIP stands for:", opts: ["Direct Return Investment Plan", "Dividend Reinvestment Plan", "Daily Return Index Portfolio", "Dividend Rate Interest Payment"], correct: 1, reason: "DRIP automatically reinvests dividends to buy more shares." },
+                    { q: "High payout ratio means:", opts: ["Company keeps most profits", "Most earnings paid as dividends", "No dividends paid", "Stock price will rise"], correct: 1, reason: "Payout ratio shows the percentage of earnings paid as dividends." }
+                ]
+            },
+            {
+                id: 9,
+                title: "Market Indices",
+                description: "What the S&P 500, Dow, and NASDAQ mean",
+                content: `<p>Stock market indices track the performance of groups of stocks, providing benchmarks for measuring market and portfolio performance. Understanding indices helps investors gauge overall market health.</p>
+                <p>The S&P 500 includes 500 large US companies, weighted by market cap. The Dow Jones Industrial Average tracks 30 major companies. The NASDAQ Composite includes all stocks on the NASDAQ exchange, heavily weighted toward tech.</p>
+                <p>Index funds track specific indices, offering diversification and low costs. They provide returns matching the index minus fees, making them popular for passive investing.</p>`,
+                keyPoints: [
+                    { icon: "📊", text: "Indices track stock groups" },
+                    { icon: "5️⃣0️⃣0️⃣", text: "S&P 500 = 500 large US companies" },
+                    { icon: "3️⃣0️⃣", text: "Dow = 30 major companies" },
+                    { icon: "📉", text: "Index funds track indices passively" }
+                ],
+                questions: [
+                    { q: "What is a market index?", opts: ["Single stock price", "Group of stocks performance", "Bond yield", "Currency rate"], correct: 1, reason: "Indices measure the performance of a group of stocks." },
+                    { q: "S&P 500 contains:", opts: ["50 stocks", "500 stocks", "1000 stocks", "All US stocks"], correct: 1, reason: "S&P 500 tracks 500 large US companies by market cap." },
+                    { q: "The Dow tracks:", opts: ["100 companies", "30 companies", "500 companies", "All NASDAQ stocks"], correct: 1, reason: "Dow Jones Industrial Average tracks 30 major companies." },
+                    { q: "NASDAQ is known for:", opts: ["Banks", "Technology companies", "Energy companies", "Utilities"], correct: 1, reason: "NASDAQ is heavily weighted toward technology companies." },
+                    { q: "Index funds aim to:", opts: ["Beat the market", "Match the index", "Pick individual stocks", "Time the market"], correct: 1, reason: "Index funds seek to replicate index performance at low cost." }
+                ]
+            },
+            {
+                id: 10,
+                title: "Market Cycles",
+                description: "Bull and bear markets explained",
+                content: `<p>Markets move in cycles of expansion and contraction, known as bull and bear markets. Understanding these patterns helps investors make better timing decisions and manage emotions.</p>
+                <p>Bull markets are characterized by rising prices, optimism, and investor confidence. Bear markets feature declining prices, pessimism, and risk aversion. Cycles are normal and inevitable.</p>
+                <p>Market timing is extremely difficult, even for professionals. Dollar-cost averaging - investing fixed amounts regularly - helps smooth out market volatility and removes emotional decision-making.</p>`,
+                keyPoints: [
+                    { icon: "🐂", text: "Bull = rising prices, optimism" },
+                    { icon: "🐻", text: "Bear = falling prices, pessimism" },
+                    { icon: "🔄", text: "Cycles are normal and inevitable" },
+                    { icon: "💵", text: "Dollar-cost averaging reduces volatility" }
+                ],
+                questions: [
+                    { q: "A bull market is defined by:", opts: ["Falling prices", "Rising prices", "Flat prices", "Random prices"], correct: 1, reason: "Bull markets are characterized by rising prices and optimism." },
+                    { q: "Bear markets feature:", opts: ["High optimism", "Rising prices", "Declining prices", "Stable prices"], correct: 2, reason: "Bear markets are marked by falling prices and pessimism." },
+                    { q: "Dollar-cost averaging means:", opts: ["Timing the market", "Investing fixed amounts regularly", "Only buying at lows", "Avoiding all risk"], correct: 1, reason: "DCA involves investing fixed amounts at regular intervals." },
+                    { q: "Market cycles are:", opts: ["Predictable", "Normal and inevitable", "Always short", "Not real"], correct: 1, reason: "Market cycles of expansion and contraction are natural market behavior." },
+                    { q: "Timing the market is:", opts: ["Easy for everyone", "Very difficult even for pros", "Guaranteed profitable", "Required for success"], correct: 1, reason: "Market timing is extremely difficult, even for professionals." }
+                ]
+            },
+            {
+                id: 11,
+                title: "Initial Public Offerings (IPOs)",
+                description: "How companies go public and what it means for investors",
+                content: `<p>An Initial Public Offering (IPO) is when a private company first sells shares to the public, becoming a publicly traded company. Understanding IPOs helps investors evaluate new investment opportunities.</p>
+                <p>Companies go public to raise capital, increase visibility, and provide liquidity to early investors. The IPO process involves underwriters, price setting, and shares allocation.</p>
+                <p>IPOs can be opportunity and risk: early trading can see significant price volatility. Research the company's financials, valuation, and growth prospects before participating.</p>`,
+                keyPoints: [
+                    { icon: "🏢", text: "IPOs are first public share sales" },
+                    { icon: "📢", text: "Companies raise capital publicly" },
+                    { icon: "📊", text: "Underwriters help set prices" },
+                    { icon: "🎢", text: "IPOs can be volatile" }
+                ],
+                questions: [
+                    { q: "What is an IPO?", opts: ["Internal company purchase", "Initial public offering", "Interest payment option", "Investment property agreement"], correct: 1, reason: "IPO stands for Initial Public Offering - first sale of shares." },
+                    { q: "Why do companies go public?", opts: ["To avoid regulation", "To raise capital", "To reduce staff", "To pay debts only"], correct: 1, reason: "Companies IPO primarily to raise capital for growth." },
+                    { q: "Underwriters in IPOs:", opts: ["Audit the company", "Help set price and sell shares", "Provide loans", "Manage employees"], correct: 1, reason: "Underwriters help determine pricing and distribute shares." },
+                    { q: "IPO investing can be:", opts: ["Always profitable", "Very risky", "Guaranteed returns", "Risk-free"], correct: 1, reason: "IPOs often experience significant price volatility." },
+                    { q: "Before buying IPO stock, you should:", opts: ["Buy immediately", "Research the company", "Ignore financials", "Not evaluate anything"], correct: 1, reason: "Always research company financials and valuation before investing." }
+                ]
+            },
+            {
+                id: 12,
+                title: "Exchange-Traded Funds (ETFs)",
+                description: "Learn about diversified, low-cost investment funds",
+                content: `<p>Exchange-Traded Funds (ETFs) are investment funds traded on stock exchanges, holding assets like stocks, bonds, or commodities. They offer diversification, low costs, and flexibility.</p>
+                <p>ETFs are similar to mutual funds but trade like stocks throughout the day. They typically have lower expense ratios than actively managed funds and offer tax efficiency.</p>
+                <p>There are many ETF types: index ETFs track benchmarks, sector ETFs focus on industries, and specialty ETFs cover niche strategies. Understanding ETF structures helps build efficient portfolios.</p>`,
+                keyPoints: [
+                    { icon: "🧺", text: "ETFs hold diversified assets" },
+                    { icon: "💹", text: "Trade like stocks on exchanges" },
+                    { icon: "💰", text: "Lower fees than mutual funds" },
+                    { icon: "🎯", text: "Index, sector, and specialty types" }
+                ],
+                questions: [
+                    { q: "What is an ETF?", opts: ["Electronic Transfer Fund", "Exchange-Traded Fund", "External Tax Form", "Equity Trading Firm"], correct: 1, reason: "ETF stands for Exchange-Traded Fund." },
+                    { q: "ETFs trade:", opts: ["Once per day", "Throughout the day", "Once per week", "Monthly only"], correct: 1, reason: "ETFs trade on exchanges like stocks, anytime during market hours." },
+                    { q: "ETFs typically have:", opts: ["Higher fees", "Lower fees than mutual funds", "No fees", "Fixed fees"], correct: 1, reason: "ETFs generally have lower expense ratios than actively managed funds." },
+                    { q: "Index ETFs track:", opts: ["Single stocks", "Market benchmarks", "Company debts", "Foreign currencies"], correct: 1, reason: "Index ETFs aim to match the performance of a market index." },
+                    { q: "A benefit of ETFs is:", opts: ["Guaranteed returns", "Diversification with single purchase", "No market risk", "Tax-free trading"], correct: 1, reason: "ETFs allow instant diversification through a single purchase." }
+                ]
+            },
+            {
+                id: 13,
+                title: "Bond Basics",
+                description: "Understanding fixed-income investments",
+                content: `<p>Bonds are fixed-income securities where investors loan money to governments or corporations in exchange for interest payments. They provide income, diversification, and capital preservation.</p>
+                <p>Bond prices move inversely to interest rates: when rates rise, bond prices fall, and vice versa. Understanding this relationship helps manage fixed-income portfolios.</p>
+                <p>Bond ratings indicate credit quality - higher ratings mean lower default risk. Government bonds are typically safest, while corporate bonds offer higher yields with more risk.</p>`,
+                keyPoints: [
+                    { icon: "📜", text: "Bonds are loans (fixed-income)" },
+                    { icon: "📈", text: "Prices inverse to interest rates" },
+                    { icon: "⭐", text: "Ratings show default risk" },
+                    { icon: "🏛️", text: "Gov bonds safest, corp riskier" }
+                ],
+                questions: [
+                    { q: "A bond is essentially:", opts: ["A stock", "A loan", "A derivative", "A commodity"], correct: 1, reason: "Bonds represent a loan from investor to issuer." },
+                    { q: "When interest rates rise, bond prices:", opts: ["Rise", "Fall", "Stay the same", "Double"], correct: 1, reason: "Bond prices and interest rates have an inverse relationship." },
+                    { q: "Bond ratings indicate:", opts: ["Interest rates", "Credit quality/default risk", "Maturity date", "Coupon rate"], correct: 1, reason: "Ratings reflect the issuer's creditworthiness and default risk." },
+                    { q: "Which bonds are typically safest?", opts: ["Corporate bonds", "Junk bonds", "Government bonds", "Municipal bonds"], correct: 2, reason: "Government bonds, especially US Treasuries, are considered safest." },
+                    { q: "Bonds provide:", opts: ["Only capital gains", "Income and preservation", "No regular payments", "Unlimited risk"], correct: 1, reason: "Bonds provide regular interest income and help preserve capital." }
+                ]
+            },
+            {
+                id: 14,
+                title: "Technical Analysis Fundamentals",
+                description: "Reading charts and identifying patterns",
+                content: `<p>Technical analysis uses historical price and volume data to predict future price movements. It assumes all relevant information is already reflected in stock prices.</p>
+                <p>Common chart types include line charts, bar charts, and candlestick charts. Each provides different insights into price action and market sentiment.</p>
+                <p>Support and resistance levels indicate where prices tend to find buying or selling pressure. Trend lines help identify market direction - uptrend, downtrend, or consolidation.</p>`,
+                keyPoints: [
+                    { icon: "📊", text: "Analyze historical price data" },
+                    { icon: "🕯️", text: "Candlestick charts show price action" },
+                    { icon: "📉", text: "Support = buying, Resistance = selling" },
+                    { icon: "➡️", text: "Trends show market direction" }
+                ],
+                questions: [
+                    { q: "Technical analysis assumes:", opts: ["Prices are random", "All info in price already", "Only fundamentals matter", "Volume doesn't matter"], correct: 1, reason: "Technical analysis believes all info is reflected in price." },
+                    { q: "Support level is where:", opts: ["Prices always fall", "Buying pressure emerges", "No trading happens", "IPO happens"], correct: 1, reason: "Support is a price level where buying interest tends to increase." },
+                    { q: "Candlestick charts show:", opts: ["Only closing prices", "Open, high, low, close", "Volume only", "Dividend history"], correct: 1, reason: "Candlesticks display OHLC (Open, High, Low, Close) data." },
+                    { q: "An uptrend is characterized by:", opts: ["Lower highs", "Higher highs and lows", "Flat prices", "Declining volume"], correct: 1, reason: "Uptrends show progressively higher peaks and troughs." },
+                    { q: "Resistance is where:", opts: ["Buying increases", "Selling pressure emerges", "Prices never reach", "Volume spikes"], correct: 1, reason: "Resistance is where selling pressure tends to cap price advances." }
+                ]
+            },
+            {
+                id: 15,
+                title: "Common Technical Indicators",
+                description: "RSI, MACD, Moving Averages and more",
+                content: `<p>Technical indicators are mathematical calculations based on price and volume data. They help identify trends, momentum, overbought/oversold conditions, and potential entry/exit points.</p>
+                <p>Moving averages smooth price data: SMA (simple) weights all prices equally, while EMA (exponential) gives more weight to recent prices. The 50-day and 200-day MAs are widely watched.</p>
+                <p>RSI (Relative Strength Index) measures momentum on a 0-100 scale: above 70 indicates overbought, below 30 oversold. MACD shows relationship between two moving averages.</p>`,
+                keyPoints: [
+                    { icon: "📊", text: "Indicators use price/volume math" },
+                    { icon: "📈", text: "Moving averages show trend direction" },
+                    { icon: "⚡", text: "RSI measures momentum (0-100)" },
+                    { icon: "🔄", text: "MACD shows moving average relationship" }
+                ],
+                questions: [
+                    { q: "RSI above 70 indicates:", opts: ["Oversold", "Overbought", "Neutral", "Guaranteed buy"], correct: 1, reason: "RSI over 70 suggests overbought conditions and potential pullback." },
+                    { q: "Moving averages:", opts: ["Show future prices exactly", "Smooth price data", "Predict earnings", "Measure volume"], correct: 1, reason: "Moving averages smooth price data to show trends." },
+                    { q: "200-day moving average is:", opts: ["Not important", "Widely watched by traders", "Only for beginners", "A secret indicator"], correct: 1, reason: "The 200-day MA is a key indicator watched by many traders." },
+                    { q: "MACD helps identify:", opts: ["Dividend payments", "Trend changes and momentum", "Company financials", "Tax rates"], correct: 1, reason: "MACD (Moving Average Convergence Divergence) shows momentum." },
+                    { q: "EMA gives more weight to:", opts: ["Old prices", "Recent prices", "Volume", "Market cap"], correct: 1, reason: "Exponential Moving Average emphasizes recent price data." }
+                ]
+            },
+            {
+                id: 16,
+                title: "Trading Strategies",
+                description: "Day trading, swing trading, and position trading",
+                content: `<p>Trading strategies vary by time horizon, risk tolerance, and goals. Understanding different approaches helps investors choose what fits their personality and circumstances.</p>
+                <p>Day trading involves buying and selling within the same day, capturing small intraday price movements. It requires significant time, skill, and carries high risk.</p>
+                <p>Swing trading holds positions for days to weeks, capturing medium-term moves. Position trading takes the longest view, holding for months or years based on fundamental analysis.</p>`,
+                keyPoints: [
+                    { icon: "⚡", text: "Day trading = same day trades" },
+                    { icon: "🌊", text: "Swing trading = days to weeks" },
+                    { icon: "🏔️", text: "Position trading = months to years" },
+                    { icon: "⏰", text: "Match strategy to your time" }
+                ],
+                questions: [
+                    { q: "Day trading involves:", opts: ["Weekly trades", "Same-day buy and sell", "Monthly trades", "Yearly trades"], correct: 1, reason: "Day traders open and close positions within the same trading day." },
+                    { q: "Swing trading holds positions for:", opts: ["Minutes only", "Days to weeks", "Years only", "Decades"], correct: 1, reason: "Swing traders hold positions from several days to weeks." },
+                    { q: "Position trading is:", opts: ["Intraday only", "Long-term focused", "Only for stocks", "Risk-free"], correct: 1, reason: "Position trading takes a long-term view, often months or years." },
+                    { q: "Day trading requires:", opts: ["No time commitment", "Significant time and skill", "Only money", "No experience"], correct: 1, reason: "Day trading demands substantial time, knowledge, and risk tolerance." },
+                    { q: "Choose strategy based on:", opts: ["Only profit potential", "Time, skill, and risk tolerance", "Random selection", "Friend's recommendation"], correct: 1, reason: "Strategy should match your available time and risk tolerance." }
+                ]
+            },
+            {
+                id: 17,
+                title: "Understanding Market Orders",
+                description: "Market, limit, stop, and other order types",
+                content: `<p>Different order types give investors control over trade execution price and timing. Understanding order types is crucial for managing risk and achieving trading objectives.</p>
+                <p>Market orders execute immediately at the best available price. Limit orders only execute at your specified price or better, giving price control but no execution guarantee.</p>
+                <p>Stop orders become market orders once price reaches a trigger level. Stop-loss limits losses; stop-limit adds price control but may not execute if gaps occur.</p>`,
+                keyPoints: [
+                    { icon: "⚡", text: "Market = immediate execution" },
+                    { icon: "🎯", text: "Limit = your price or better" },
+                    { icon: "🛑", text: "Stop = triggers at price level" },
+                    { icon: "🔒", text: "Stop-loss limits potential losses" }
+                ],
+                questions: [
+                    { q: "A market order:", opts: ["Has a price limit", "Executes immediately", "May not execute", "Is always delayed"], correct: 1, reason: "Market orders execute immediately at the best available price." },
+                    { q: "A limit order:", opts: ["Always executes", "Has price control", "Is same as market", "Has no conditions"], correct: 1, reason: "Limit orders only execute at your specified price or better." },
+                    { q: "A stop-loss order:", opts: ["Guarantees profit", "Limits potential losses", "Is optional", "Never triggers"], correct: 1, reason: "Stop-loss orders are designed to limit losses when triggered." },
+                    { q: "Stop orders become:", opts: ["Limit orders", "Market orders when triggered", "Cancelled orders", "Lump sum payments"], correct: 1, reason: "Once triggered, stop orders become market orders to execute." },
+                    { q: "Stop-limit adds:", opts: ["Guaranteed execution", "Price control after trigger", "Lower fees", "Automatic profit"], correct: 1, reason: "Stop-limit adds a limit price after the stop triggers." }
+                ]
+            },
+            {
+                id: 18,
+                title: "Risk Management",
+                description: "Protecting your capital with smart position sizing",
+                content: `<p>Risk management is crucial for long-term investing success. It involves protecting capital through position sizing, diversification, and loss-limiting strategies.</p>
+                <p>Position sizing determines how much capital to risk on any single trade. A common rule is risking no more than 1-2% of portfolio on any single position.</p>
+                <p>Stop-loss orders automatically limit losses. Diversification spreads risk across assets. Never invest money you'll need soon, and maintain an emergency fund separately.</p>`,
+                keyPoints: [
+                    { icon: "🛡️", text: "Protect capital first" },
+                    { icon: "📏", text: "Size positions appropriately" },
+                    { icon: "🛑", text: "Use stop-loss orders" },
+                    { icon: "💼", text: "Maintain emergency fund" }
+                ],
+                questions: [
+                    { q: "Position sizing helps:", opts: ["Maximize returns", "Control risk per trade", "Avoid taxes", "Guarantee profits"], correct: 1, reason: "Proper position sizing limits risk on any single trade." },
+                    { q: "A common rule is risking:", opts: ["50% per trade", "1-2% per trade", "All capital", "Nothing"], correct: 1, reason: "Many traders risk only 1-2% of portfolio on one position." },
+                    { q: "Stop-loss orders:", opts: ["Guarantee profits", "Limit maximum loss", "Are illegal", "Increase risk"], correct: 1, reason: "Stop-loss orders automatically limit potential losses." },
+                    { q: "An emergency fund should be:", opts: ["In stocks", "In cash/bank", "In crypto", "In bonds only"], correct: 1, reason: "Emergency funds should be in liquid, safe accounts like savings." },
+                    { q: "Before investing, you should:", opts: ["Use all savings", "Keep emergency fund first", "Borrow money", "Ignore income"], correct: 1, reason: "Always maintain an emergency fund before investing." }
+                ]
+            },
+            {
+                id: 19,
+                title: "Behavioral Finance",
+                description: "Understanding investor psychology and biases",
+                content: `<p>Behavioral finance studies how psychological biases affect investor decisions. Understanding these biases helps avoid costly mistakes and make better investment choices.</p>
+                <p>Loss aversion means we feel losses more strongly than equivalent gains. Herding follows the crowd regardless of logic. Overconfidence leads to excessive trading.</p>
+                <p>Confirmation bias seeks information supporting existing beliefs. Anchoring fixates on irrelevant reference points. Awareness of these biases is the first step to overcoming them.</p>`,
+                keyPoints: [
+                    { icon: "🧠", text: "Psychology affects investing" },
+                    { icon: "😰", text: "Loss aversion = fear losses more" },
+                    { icon: "🐑", text: "Herding = following the crowd" },
+                    { icon: "🎯", text: "Awareness helps overcome bias" }
+                ],
+                questions: [
+                    { q: "Loss aversion means:", opts: ["We like losses", "Losses feel worse than gains", "We ignore losses", "We take more risks"], correct: 1, reason: "Loss aversion describes feeling losses more painfully than equivalent gains." },
+                    { q: "Herding behavior is:", opts: ["Careful analysis", "Following the crowd", "Diversification", "Research-based"], correct: 1, reason: "Herding means copying others' actions without independent analysis." },
+                    { q: "Confirmation bias is:", opts: ["Seeking opposing views", "Only accepting confirming info", "Being neutral", "Random selection"], correct: 1, reason: "Confirmation bias is favoring information that supports existing beliefs." },
+                    { q: "Overconfidence leads to:", opts: ["Careful investing", "Excessive trading", "Diversification", "Low returns"], correct: 1, reason: "Overconfidence often causes traders to trade too actively." },
+                    { q: "Overcoming biases starts with:", opts: ["Ignoring them", "Being unaware", "Recognizing them", "Denying them"], correct: 2, reason: "First step is recognizing and acknowledging our biases." }
+                ]
+            },
+            {
+                id: 20,
+                title: "Building a Long-Term Portfolio",
+                description: "Putting it all together for financial success",
+                content: `<p>Successful long-term investing combines knowledge from all previous modules. It requires a plan, discipline, and patience to achieve financial goals.</p>
+                <p>Start with clear goals: retirement, house, education. Determine time horizon and risk tolerance. Build a diversified portfolio matching your profile.</p>
+                <p>Review and rebalance periodically - but avoid over-trading. Stay focused on long-term objectives during market volatility. Consistency and patience beat timing the market.</p>`,
+                keyPoints: [
+                    { icon: "🎯", text: "Define clear financial goals" },
+                    { icon: "🧭", text: "Match portfolio to time/risk" },
+                    { icon: "⚖️", text: "Rebalance periodically" },
+                    { icon: "🏃", text: "Stay invested for the long term" }
+                ],
+                questions: [
+                    { q: "Long-term investing starts with:", opts: ["Picking stocks daily", "Defining clear goals", "Ignoring time horizon", "Day trading"], correct: 1, reason: "Clear financial goals are the foundation of investment planning." },
+                    { q: "Portfolio should match:", opts: ["Latest hot stocks", "Your time horizon and risk", "Whatever friends recommend", "Random selection"], correct: 1, reason: "Portfolio should align with your time frame and risk tolerance." },
+                    { q: "Rebalancing means:", opts: ["Trading daily", "Periodically realigning allocation", "Selling everything", "Ignoring the portfolio"], correct: 1, reason: "Rebalancing maintains target asset allocation over time." },
+                    { q: "Market volatility is:", opts: ["Time to panic", "Normal - stay the course", "A reason to sell all", "Always negative"], correct: 1, reason: "Volatility is normal; staying invested beats market timing." },
+                    { q: "Consistency in investing:", opts: ["Doesn't matter", "Beats market timing", "Is risky", "Guarantees losses"], correct: 1, reason: "Regular, consistent investing outperforms attempts to time the market." }
+                ]
+            }
+        ];
+
+        // Get module ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const moduleId = parseInt(urlParams.get('id')) || 1;
+        const module = modules.find(m => m.id === moduleId) || modules[0];
+
+        // State
+        let currentQuestion = 0;
+        let answers = [];
+        let score = 0;
+
+        // Load module
+        function loadModule() {
+            document.getElementById('moduleNumber').textContent = `Module ${module.id} of ${modules.length}`;
+            document.getElementById('moduleTitle').textContent = module.title;
+            document.getElementById('moduleDesc').textContent = module.description;
+            document.getElementById('studyContent').innerHTML = module.content;
+            
+            // Key points
+            const keyPointsHTML = module.keyPoints.map(kp => `
+                <div class="key-point">
+                    <span class="key-point-icon">${kp.icon}</span>
+                    <span>${kp.text}</span>
+                </div>
+            `).join('');
+            document.getElementById('keyPoints').innerHTML = keyPointsHTML;
+
+            // Load saved progress
+            loadProgress();
+        }
+
+        // Save progress
+        function saveProgress() {
+            const progress = JSON.parse(localStorage.getItem('finerva_progress') || '{}');
+            progress[moduleId] = { completed: true, score: score, date: new Date().toISOString() };
+            localStorage.setItem('finerva_progress', JSON.stringify(progress));
+        }
+
+        // Load progress
+        function loadProgress() {
+            const progress = JSON.parse(localStorage.getItem('finerva_progress') || '{}');
+            if (progress[moduleId] && progress[moduleId].completed) {
+                // Show completion status
+                document.getElementById('contentSection').innerHTML = `
+                    <div class="module-header">
+                        <span class="module-number">Module ${module.id} of ${modules.length}</span>
+                        <h1 class="module-title">${module.title}</h1>
+                        <p class="module-desc">${module.description}</p>
+                    </div>
+                    <div class="results-section active">
+                        <div class="results-icon">✓</div>
+                        <h2 class="results-title">Module Completed!</h2>
+                        <div class="results-score">${progress[moduleId].score}/5</div>
+                        <p class="results-message">You've already completed this module.</p>
+                        <div class="btn-container">
+                            <a href="learningmodule.html" class="btn btn-primary">Back to Dashboard</a>
+                            <button class="btn btn-secondary" onclick="retryQuiz()">Retry Quiz</button>
+                        </div>
+                        <div class="completion-badge">✓ Module Completed</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Start quiz
+        function startQuiz() {
+            document.getElementById('contentSection').style.display = 'none';
+            document.getElementById('quizSection').classList.add('active');
+            currentQuestion = 0;
+            answers = [];
+            score = 0;
+            loadQuestion();
+        }
+
+        // Load question
+        function loadQuestion() {
+            const q = module.questions[currentQuestion];
+            
+            // Progress dots
+            const progressHTML = module.questions.map((_, i) => {
+                let className = 'quiz-dot';
+                if (i < currentQuestion) {
+                    className += answers[i] === module.questions[i].correct ? ' correct' : ' wrong';
+                } else if (i === currentQuestion) {
+                    className += ' current';
+                }
+                return `<div class="${className}"></div>`;
+            }).join('');
+            document.getElementById('quizProgress').innerHTML = progressHTML;
+
+            // Question
+            const optionsHTML = q.opts.map((opt, i) => {
+                let className = 'option';
+                if (answers[currentQuestion] !== undefined) {
+                    className += ' disabled';
+                    if (i === q.correct) className += ' correct';
+                    else if (i === answers[currentQuestion]) className += ' wrong';
+                }
+                return `
+                    <div class="${className}" onclick="selectOption(${i})">
+                        <span class="option-letter">${String.fromCharCode(65 + i)}</span>
+                        <span>${opt}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('questionCard').innerHTML = `
+                <p class="question-text">${currentQuestion + 1}. ${q.q}</p>
+                <div class="options">${optionsHTML}</div>
+            `;
+
+            // Explanation
+            const explanationEl = document.getElementById('explanation');
+            if (answers[currentQuestion] !== undefined) {
+                const isCorrect = answers[currentQuestion] === q.correct;
+                explanationEl.className = `explanation show ${isCorrect ? 'correct' : 'wrong'}`;
+                explanationEl.innerHTML = `
+                    <p class="explanation-title">${isCorrect ? '✓ Correct!' : '✗ Incorrect'}</p>
+                    <p>${q.reason}</p>
+                `;
+            } else {
+                explanationEl.className = 'explanation';
+            }
+
+            // Buttons
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentQuestion === module.questions.length - 1) {
+                nextBtn.textContent = 'See Results';
+                nextBtn.disabled = answers[currentQuestion] === undefined;
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.disabled = answers[currentQuestion] === undefined;
+            }
+        }
+
+        // Select option
+        function selectOption(optionIndex) {
+            if (answers[currentQuestion] !== undefined) return;
+            
+            answers[currentQuestion] = optionIndex;
+            if (optionIndex === module.questions[currentQuestion].correct) {
+                score++;
+            }
+            
+            loadQuestion();
+        }
+
+        // Previous question
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (currentQuestion < module.questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Show results
+        function showResults() {
+            document.getElementById('quizSection').classList.remove('active');
+            document.getElementById('resultsSection').classList.add('active');
+
+            const percentage = (score / module.questions.length) * 100;
+            document.getElementById('resultsScore').textContent = `${score}/${module.questions.length}`;
+            
+            if (percentage === 100) {
+                document.getElementById('resultsIcon').textContent = '🏆';
+                document.getElementById('resultsTitle').textContent = 'Perfect Score!';
+                document.getElementById('resultsMessage').textContent = "Excellent! You've mastered this module!";
+            } else if (percentage >= 80) {
+                document.getElementById('resultsIcon').textContent = '🎉';
+                document.getElementById('resultsTitle').textContent = 'Great Job!';
+                document.getElementById('resultsMessage').textContent = 'You have a solid understanding of this topic.';
+            } else if (percentage >= 60) {
+                document.getElementById('resultsIcon').textContent = '👍';
+                document.getElementById('resultsTitle').textContent = 'Good Effort!';
+                document.getElementById('resultsMessage').textContent = 'Consider reviewing the material and trying again.';
+            } else {
+                document.getElementById('resultsIcon').textContent = '📚';
+                document.getElementById('resultsTitle').textContent = 'Keep Learning!';
+                document.getElementById('resultsMessage').textContent = 'Review the study material and try again.';
+            }
+
+            // Save progress
+            saveProgress();
+        }
+
+        // Retry quiz
+        function retryQuiz() {
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('contentSection').style.display = 'block';
+            loadModule();
+        }
+
+        // Initialize
+        loadModule();
+    </script>
+</body>
+</html>
